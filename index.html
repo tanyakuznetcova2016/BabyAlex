@@ -154,6 +154,27 @@ label{font-size:13px;color:#817874}
   <h2>Сегодня</h2>
   <div id="timeline" class="muted">Пока нет событий</div>
  </div>
+ 
+<div class="card">
+ <h2>💾 Резервная копия</h2>
+ <p class="muted">
+  Сохрани записи Александра в файл, чтобы их можно было восстановить.
+ </p>
+ <button class="primary" onclick="exportData()">
+  📥 Сохранить резервную копию
+ </button>
+ <button onclick="document.getElementById('importFile').click()">
+  📤 Восстановить из файла
+ </button>
+ <input
+  id="importFile"
+  type="file"
+  accept=".json,application/json"
+  style="display:none"
+  onchange="importData(event)"
+ >
+</div>
+
 </section>
 
 <section id="add" class="hidden">
