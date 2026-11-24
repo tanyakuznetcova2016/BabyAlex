@@ -849,7 +849,8 @@ function render(){
 
  // Фильтрация событий по выбранной дате
 
- const selectedEvents=list.filter(e=>{
+
+const selectedEvents=list.filter(e=>{
 
   const d=new Date(e.date);
 
@@ -859,7 +860,9 @@ function render(){
    String(d.getDate()).padStart(2,'0');
 
   return localDate===selectedTimelineDate;
- });
+
+ }).sort((a,b)=>new Date(a.date)-new Date(b.date));
+
 
  // Заголовок выбранной даты
 
