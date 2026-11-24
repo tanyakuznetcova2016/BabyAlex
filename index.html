@@ -212,6 +212,52 @@ function deleteEvent(id){
  save();
 }
 
+
+function editEvent(id){
+ const e=events.find(x=>x.id===id);
+ if(!e)return;
+
+ const dateValue=new Date(new Date(e.date).getTime()-new Date(e.date).getTimezoneOffset()*60000).toISOString().slice(0,16);
+ const dateInput=prompt('Дата и время (ГГГГ-ММ-ДДTЧЧ:ММ)',dateValue);
+ if(dateInput===null)return;
+ const newDate=new Date(dateInput);
+ if(isNaN(newDate.getTime()))return alert('Некорректная дата');
+ e.date=newDate.toISOString();
+
+ function ask(field,label){
+  const value=prompt(label,e[field]??'');
+  if(value!==null)e[field]=value;
+ }
+
+ if(e.type==='feeding')ask('amount','Объём смеси (мл):');
+ if(e.type==='meal'){
+  ask('name','Продукт:');
+  ask('amount','Количество:');
+  ask('note','Заметки:');
+ }
+ if(e.type==='growth'){
+  ask('height','Рост (см):');
+  ask('weight','Вес (г):');
+ }
+ if(e.type==='sleep'||e.type==='walk'){
+  const duration=prompt('Длительность в минутах:',e.duration??'');
+  if(duration!==null){
+   const n=Number(duration);
+   if(!Number.isFinite(n)||n<0)return alert('Некорректная длительность');
+   e.duration=n;
+   e.start=new Date(newDate.getTime()-n*60000).toISOString();
+  }
+ }
+ save();
+}
+
+function deleteEvent(id){
+ if(confirm('Удалить эту запись?')){
+  events=events.filter(e=>e.id!==id);
+  save();
+ }
+}
+
 function render(){
  const list=[...events].sort((a,b)=>new Date(b.date)-new Date(a.date));
  const today=new Date().toDateString();
@@ -227,7 +273,7 @@ function render(){
    e.type==='meal'?(e.amount||'')+' '+(e.note||''):
    ['sleep','walk'].includes(e.type)?'Длительность: '+e.duration+' мин':'';
 
-  return '<div class="event"><strong>'+title+'</strong><small>'+fmt(e.date)+' · '+detail+'</small><div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button class="delete" onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>';
+  return '<div class="event"><strong>'+title+'</strong><small>'+fmt(e.date)+' · '+detail+'</small><div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>';
  }).join(''):'Пока нет событий за сегодня';
 
  const feeds=list.filter(e=>e.type==='feeding'||e.type==='meal');
@@ -255,9 +301,10 @@ function render(){
 
  document.getElementById('growthList').innerHTML=list.filter(e=>e.type==='growth').map(e=>
   '<div class="event">'+fmt(e.date)+'<br>Рост: '+(e.height||'—')+' см · Вес: '+(e.weight||'—')+' г'+
-  '<div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button class="delete" onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>'
+  '<div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>'
  ).join('');
 }
+
 
 render();
 setInterval(render,30000);
