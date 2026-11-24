@@ -146,7 +146,8 @@ function showTab(name,button){
  ['home','add','growth'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==name));
  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
  if(button)button.classList.add('active');
- else document.querySelectorAll('.tabs button')[name==='home'?0:name==='add'?1:2].classList.add('active');
+ else if(name==='home')document.querySelectorAll('.tabs button')[0].classList.add('active');
+ else if(name==='growth')document.querySelectorAll('.tabs button')[1].classList.add('active');
 }
 function fmt(date){
  return new Date(date).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
