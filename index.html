@@ -473,6 +473,41 @@ function saveEditedEvent(){
  save();
 }
 
+// Резервное копирование — экспорт
+
+function exportData(){
+
+ const backup={
+  app:'BabyAlex',
+  version:1,
+  exportedAt:new Date().toISOString(),
+  events:events,
+  timers:timers
+ };
+
+ const content=JSON.stringify(backup,null,2);
+
+ const blob=new Blob([content],{
+  type:'application/json'
+ });
+
+ const url=URL.createObjectURL(blob);
+
+ const link=document.createElement('a');
+ link.href=url;
+
+ const date=new Date().toISOString().slice(0,10);
+ link.download='BabyAlex-backup-'+date+'.json';
+
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+
+ URL.revokeObjectURL(url);
+
+ alert('Резервная копия подготовлена!');
+}
+
 // Удаление записи
 
 function deleteEvent(id){
@@ -481,6 +516,57 @@ function deleteEvent(id){
 
  events=events.filter(e=>String(e.id)!==String(id));
  save();
+}
+
+// Резервное копирование — импорт
+
+function importData(event){
+
+ const file=event.target.files[0];
+ if(!file)return;
+
+ const reader=new FileReader();
+
+ reader.onload=function(){
+
+  try{
+   const backup=JSON.parse(reader.result);
+
+   if(
+    !backup||
+    backup.app!=='BabyAlex'||
+    !Array.isArray(backup.events)||
+    !backup.timers||
+    typeof backup.timers!=='object'||
+    Array.isArray(backup.timers)
+   ){
+    alert('Этот файл не похож на резервную копию BabyAlex.');
+    return;
+   }
+
+   if(!confirm('Восстановить данные из файла? Текущие записи на этом устройстве будут заменены.')){
+    return;
+   }
+
+   events=backup.events;
+   timers=backup.timers;
+
+   save();
+
+   alert('Данные успешно восстановлены!');
+  }catch(error){
+   alert('Не удалось прочитать файл резервной копии.');
+  }finally{
+   event.target.value='';
+  }
+ };
+
+ reader.onerror=function(){
+  alert('Не удалось прочитать файл.');
+  event.target.value='';
+ };
+
+ reader.readAsText(file);
 }
 
 // Отображение данных
