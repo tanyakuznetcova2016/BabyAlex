@@ -310,16 +310,7 @@ function deleteEvent(id){
 }
 
 
-function editEvent(id){
- const e=events.find(x=>x.id===id);
- if(!e)return;
 
- const dateValue=new Date(new Date(e.date).getTime()-new Date(e.date).getTimezoneOffset()*60000).toISOString().slice(0,16);
- const dateInput=prompt('Дата и время (ГГГГ-ММ-ДДTЧЧ:ММ)',dateValue);
- if(dateInput===null)return;
- const newDate=new Date(dateInput);
- if(isNaN(newDate.getTime()))return alert('Некорректная дата');
- e.date=newDate.toISOString();
 
  function ask(field,label){
   const value=prompt(label,e[field]??'');
