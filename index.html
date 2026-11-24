@@ -202,45 +202,106 @@ function fmt(date){
  return new Date(date).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 }
 
+
+let editingEventId = null;
+
 function editEvent(id){
  const e=events.find(x=>x.id===id);
  if(!e)return;
 
- const localDate=new Date(new Date(e.date).getTime()-new Date(e.date).getTimezoneOffset()*60000).toISOString().slice(0,16);
- const dateInput=prompt('Дата и время (ГГГГ-ММ-ДДTЧЧ:ММ)',localDate);
- if(dateInput===null)return;
- const newDate=new Date(dateInput);
- if(isNaN(newDate.getTime()))return alert('Некорректная дата');
- e.date=newDate.toISOString();
+ editingEventId=id;
 
- function ask(field,label){
-  const value=prompt(label,e[field]??'');
-  if(value!==null)e[field]=value;
- }
+ const date=new Date(e.date);
+ document.getElementById('editDate').value=
+  date.getFullYear()+'-'+
+  String(date.getMonth()+1).padStart(2,'0')+'-'+
+  String(date.getDate()).padStart(2,'0');
+
+ document.getElementById('editTime').value=
+  String(date.getHours()).padStart(2,'0')+':'+
+  String(date.getMinutes()).padStart(2,'0');
+
+ let fields='';
 
  if(e.type==='feeding'){
-  ask('amount','Объём смеси (мл):');
+  fields='<label>Объём смеси (мл)</label><input id="editAmount" type="number" value="'+(e.amount||'')+'">';
  }
+
  if(e.type==='meal'){
-  ask('name','Название продукта:');
-  ask('amount','Количество:');
-  ask('note','Заметки:');
+  fields='<label>Продукт</label><input id="editName" value="'+(e.name||'')+'">'+
+   '<label>Количество</label><input id="editAmount" value="'+(e.amount||'')+'">'+
+   '<label>Заметки</label><textarea id="editNote">'+(e.note||'')+'</textarea>';
  }
+
  if(e.type==='growth'){
-  ask('height','Рост (см):');
-  ask('weight','Вес (г):');
+  fields='<label>Рост (см)</label><input id="editHeight" type="number" step="0.1" value="'+(e.height||'')+'">'+
+   '<label>Вес (г)</label><input id="editWeight" type="number" value="'+(e.weight||'')+'">';
  }
+
  if(e.type==='sleep'||e.type==='walk'){
-  const duration=prompt('Длительность в минутах:',e.duration??'');
-  if(duration!==null){
-   const n=Number(duration);
-   if(!Number.isFinite(n)||n<0)return alert('Укажи корректную длительность');
-   e.duration=n;
-   e.start=new Date(newDate.getTime()-n*60000).toISOString();
-  }
+  fields='<label>Длительность (минуты)</label><input id="editDuration" type="number" min="0" value="'+(e.duration||'')+'">';
  }
+
+ document.getElementById('editFields').innerHTML=fields;
+ document.getElementById('editModal').classList.remove('hidden');
+}
+
+function closeEdit(){
+ document.getElementById('editModal').classList.add('hidden');
+ editingEventId=null;
+}
+
+function saveEditedEvent(){
+ const e=events.find(x=>x.id===editingEventId);
+ if(!e)return;
+
+ const dateValue=document.getElementById('editDate').value;
+ const timeValue=document.getElementById('editTime').value;
+
+ if(!dateValue||!timeValue){
+  alert('Укажи дату и время');
+  return;
+ }
+
+ const date=new Date(dateValue+'T'+timeValue);
+ if(isNaN(date.getTime())){
+  alert('Некорректная дата или время');
+  return;
+ }
+
+ e.date=date.toISOString();
+
+ const getValue=id=>document.getElementById(id)?.value??'';
+
+ if(e.type==='feeding'){
+  e.amount=getValue('editAmount');
+ }
+
+ if(e.type==='meal'){
+  e.name=getValue('editName');
+  e.amount=getValue('editAmount');
+  e.note=getValue('editNote');
+ }
+
+ if(e.type==='growth'){
+  e.height=getValue('editHeight');
+  e.weight=getValue('editWeight');
+ }
+
+ if(e.type==='sleep'||e.type==='walk'){
+  const duration=Number(getValue('editDuration'));
+  if(!Number.isFinite(duration)||duration<0){
+   alert('Проверь длительность');
+   return;
+  }
+  e.duration=duration;
+  e.start=new Date(date.getTime()-duration*60000).toISOString();
+ }
+
+ closeEdit();
  save();
 }
+
 
 function deleteEvent(id){
  if(!confirm('Удалить эту запись?'))return;
