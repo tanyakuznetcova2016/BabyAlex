@@ -6,45 +6,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f8f3ef">
 <title>BabyAlex</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f8f5f2;color:#403b38;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{
+ margin:0;
+ background:#f8f5f2;
+ color:#403b38;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
 header{padding:25px 20px 18px;background:#fff}
 h1{margin:0;font-size:27px;color:#806b83}
 header p{margin:6px 0 0;color:#938a87;font-size:14px}
 main{max-width:650px;margin:auto;padding:16px}
 .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
-button{border:0;border-radius:14px;padding:14px 8px;background:#e9dfe9;color:#5e5063;font-size:14px;font-weight:600;cursor:pointer}
+button{
+ border:0;
+ border-radius:14px;
+ padding:14px 8px;
+ background:#e9dfe9;
+ color:#5e5063;
+ font-size:14px;
+ font-weight:600;
+ cursor:pointer
+}
 button:active{opacity:.7}
-.card{background:white;border-radius:18px;padding:17px;margin-top:14px;box-shadow:0 3px 14px #6c51440b}
+.card{
+ background:white;
+ border-radius:18px;
+ padding:17px;
+ margin-top:14px;
+ box-shadow:0 3px 14px #6c51440b
+}
 h2{font-size:18px;margin:0 0 13px}
 .muted{color:#99918d;font-size:13px}
-.timer{font-size:25px;font-weight:700;color:#806b83;margin:8px 0}
-input,select,textarea{width:100%;padding:12px;border:1px solid #e7dfda;border-radius:11px;margin:6px 0 12px;background:#fff;font:inherit;color:#403b38}
+.timer{
+ font-size:25px;
+ font-weight:700;
+ color:#806b83;
+ margin:8px 0
+}
+input,select,textarea{
+ width:100%;
+ padding:12px;
+ border:1px solid #e7dfda;
+ border-radius:11px;
+ margin:6px 0 12px;
+ background:#fff;
+ font:inherit;
+ color:#403b38
+}
 label{font-size:13px;color:#817874}
-.primary{background:#88748d;color:white;width:100%;margin-top:5px}
+.primary{
+ background:#88748d;
+ color:white;
+ width:100%;
+ margin-top:5px
+}
 .event{padding:12px 0;border-bottom:1px solid #eee8e4}
 .event:last-child{border:0}
 .event strong{display:block}
 .event small{color:#99918d}
- .event-actions{
+.event-actions{
  display:flex;
  gap:8px;
- margin-top:10px;
+ margin-top:10px
 }
 .event-actions button{
  padding:8px 12px;
- font-size:12px;
+ font-size:12px
 }
 .event-actions .delete{
  background:#f5e5e2;
- color:#9b5c54;
+ color:#9b5c54
 }
 .tabs{display:flex;gap:8px;overflow:auto;margin-top:16px}
 .tabs button{white-space:nowrap;background:#eee8e4}
 .tabs button.active{background:#88748d;color:white}
 .hidden{display:none}
- 
+
 #editModal{
  position:fixed;
  inset:0;
@@ -54,7 +94,7 @@ label{font-size:13px;color:#817874}
  display:flex;
  align-items:center;
  justify-content:center;
- overflow-y:auto;
+ overflow-y:auto
 }
 #editModal.hidden{display:none}
 #editModal .card{
@@ -62,156 +102,250 @@ label{font-size:13px;color:#817874}
  max-width:450px;
  max-height:90vh;
  overflow-y:auto;
- margin:auto;
+ margin:auto
 }
 #editModal label{
  display:block;
  margin-top:12px;
- margin-bottom:5px;
+ margin-bottom:5px
 }
 #editModal input,
 #editModal textarea{
  width:100%;
  box-sizing:border-box;
- margin-bottom:8px;
+ margin-bottom:8px
 }
 #editModal button{
  width:100%;
- margin-top:8px;
+ margin-top:8px
 }
-
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>BabyAlex ♡</h1>
-<p>Дневник Александра</p>
+ <h1>BabyAlex ♡</h1>
+ <p>Дневник Александра</p>
 </header>
+
 <main>
+
 <div class="actions">
-<button id="sleepBtn" onclick="toggleTimer('sleep')">🌙 Уснул</button>
-<button id="walkBtn" onclick="toggleTimer('walk')">🚶 Вышли гулять</button>
-<button onclick="showTab('add')">＋ Добавить</button>
+ <button id="sleepBtn" onclick="toggleTimer('sleep')">🌙 Уснул</button>
+ <button id="walkBtn" onclick="toggleTimer('walk')">🚶 Вышли гулять</button>
+ <button onclick="showTab('add')">＋ Добавить</button>
 </div>
 
 <div id="activeTimers"></div>
 
 <div class="card">
-<h2>🍼 Последнее кормление</h2>
-<div id="lastFeed" class="muted">Пока нет записей</div>
+ <h2>🍼 Последнее кормление</h2>
+ <div id="lastFeed" class="muted">Пока нет записей</div>
 </div>
 
 <div class="tabs">
-<button class="active" onclick="showTab('home',this)">Главная</button>
-<button onclick="showTab('growth',this)">Рост и вес</button>
+ <button class="active" onclick="showTab('home',this)">Главная</button>
+ <button onclick="showTab('growth',this)">Рост и вес</button>
 </div>
 
 <section id="home">
-<div class="card">
-<h2>Сегодня</h2>
-<div id="timeline" class="muted">Пока нет событий</div>
-</div>
+ <div class="card">
+  <h2>Сегодня</h2>
+  <div id="timeline" class="muted">Пока нет событий</div>
+ </div>
 </section>
 
 <section id="add" class="hidden">
-<div class="card">
-<h2>Добавить кормление</h2>
-<label>Время</label><input id="feedTime" type="datetime-local">
-<label>Объём смеси (мл)</label><input id="feedAmount" type="number" placeholder="180">
-<button class="primary" onclick="addEvent('feeding')">Сохранить кормление</button>
-</div>
-<div class="card">
-<h2>Добавить прикорм</h2>
-<label>Продукт</label><input id="mealName" placeholder="Например, кабачок">
-<label>Количество</label><input id="mealAmount" placeholder="Например, 2 чайные ложки">
-<label>Заметки</label><textarea id="mealNote" placeholder="Реакция малыша..."></textarea>
-<button class="primary" onclick="addEvent('meal')">Сохранить прикорм</button>
-</div>
+
+ <div class="card">
+  <h2>Добавить кормление</h2>
+  <label>Время</label>
+  <input id="feedTime" type="datetime-local">
+  <label>Объём смеси (мл)</label>
+  <input id="feedAmount" type="number" placeholder="180">
+  <button class="primary" onclick="addEvent('feeding')">Сохранить кормление</button>
+ </div>
+
+ <div class="card">
+  <h2>Добавить прикорм</h2>
+  <label>Продукт</label>
+  <input id="mealName" placeholder="Например, кабачок">
+  <label>Количество</label>
+  <input id="mealAmount" placeholder="Например, 2 чайные ложки">
+  <label>Заметки</label>
+  <textarea id="mealNote" placeholder="Реакция малыша..."></textarea>
+  <button class="primary" onclick="addEvent('meal')">Сохранить прикорм</button>
+ </div>
+
 </section>
 
 <section id="growth" class="hidden">
-<div class="card">
-<h2>📏 Рост и вес</h2>
-<label>Дата измерения</label><input id="growthDate" type="date">
-<label>Рост (см)</label><input id="height" type="number" step="0.1">
-<label>Вес (г)</label><input id="weight" type="number">
-<button class="primary" onclick="addEvent('growth')">Сохранить измерение</button>
-<div id="growthList"></div>
-</div>
+ <div class="card">
+  <h2>📏 Рост и вес</h2>
+  <label>Дата измерения</label>
+  <input id="growthDate" type="date">
+  <label>Рост (см)</label>
+  <input id="height" type="number" step="0.1">
+  <label>Вес (г)</label>
+  <input id="weight" type="number">
+  <button class="primary" onclick="addEvent('growth')">Сохранить измерение</button>
+  <div id="growthList"></div>
+ </div>
 </section>
+
 </main>
 
+<!-- Окно редактирования -->
+
+<div id="editModal" class="hidden">
+ <div class="card">
+  <h2>Редактирование записи</h2>
+
+  <label>Дата</label>
+  <input id="editDate" type="date">
+
+  <label>Время</label>
+  <input id="editTime" type="time">
+
+  <div id="editFields"></div>
+
+  <button class="primary" onclick="saveEditedEvent()">Сохранить изменения</button>
+  <button onclick="closeEdit()">Отмена</button>
+ </div>
+</div>
+
 <script>
+
 let events=JSON.parse(localStorage.getItem('babyAlexEvents')||'[]');
 let timers=JSON.parse(localStorage.getItem('babyAlexTimers')||'{}');
+
+let editingEventId=null;
+
+function nowLocal(){
+ const d=new Date();
+ return new Date(d.getTime()-d.getTimezoneOffset()*60000)
+  .toISOString().slice(0,16);
+}
+
+function todayLocal(){
+ return nowLocal().slice(0,10);
+}
+
+document.getElementById('feedTime').value=nowLocal();
+document.getElementById('growthDate').value=todayLocal();
 
 function save(){
  localStorage.setItem('babyAlexEvents',JSON.stringify(events));
  localStorage.setItem('babyAlexTimers',JSON.stringify(timers));
  render();
 }
-function nowLocal(){
- const d=new Date();
- return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
-}
-document.getElementById('feedTime').value=nowLocal();
-document.getElementById('growthDate').value=new Date().toISOString().slice(0,10);
 
 function addEvent(type){
+
  const id=Date.now();
  let item={id,type,date:new Date().toISOString()};
+
  if(type==='feeding'){
-  item.date=new Date(document.getElementById('feedTime').value).toISOString();
+  const value=document.getElementById('feedTime').value;
+  if(!value)return alert('Укажи время кормления');
+
+  item.date=new Date(value).toISOString();
   item.amount=document.getElementById('feedAmount').value;
+
   if(!item.amount)return alert('Укажи объём смеси');
  }
+
  if(type==='meal'){
   item.name=document.getElementById('mealName').value;
   item.amount=document.getElementById('mealAmount').value;
   item.note=document.getElementById('mealNote').value;
+
   if(!item.name)return alert('Укажи продукт');
  }
+
  if(type==='growth'){
-  item.date=new Date(document.getElementById('growthDate').value).toISOString();
+  const value=document.getElementById('growthDate').value;
+  if(!value)return alert('Укажи дату измерения');
+
+  item.date=new Date(value+'T12:00:00').toISOString();
   item.height=document.getElementById('height').value;
   item.weight=document.getElementById('weight').value;
+
   if(!item.height&&!item.weight)return alert('Укажи рост или вес');
  }
+
  events.push(item);
  save();
+
  alert('Запись сохранена!');
 }
+
 function toggleTimer(type){
+
  if(timers[type]){
   const start=new Date(timers[type]).getTime();
-  events.push({id:Date.now(),type,date:new Date().toISOString(),start:timers[type],duration:Math.round((Date.now()-start)/60000)});
+
+  events.push({
+   id:Date.now(),
+   type,
+   date:new Date().toISOString(),
+   start:timers[type],
+   duration:Math.round((Date.now()-start)/60000)
+  });
+
   delete timers[type];
+
  }else{
   timers[type]=new Date().toISOString();
  }
+
  save();
 }
+
 function showTab(name,button){
- ['home','add','growth'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==name));
+
+ ['home','add','growth'].forEach(id=>{
+  document.getElementById(id).classList.toggle('hidden',id!==name);
+ });
+
  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+
  if(button)button.classList.add('active');
  else if(name==='home')document.querySelectorAll('.tabs button')[0].classList.add('active');
  else if(name==='growth')document.querySelectorAll('.tabs button')[1].classList.add('active');
 }
+
 function fmt(date){
- return new Date(date).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+ return new Date(date).toLocaleString('ru-RU',{
+  day:'numeric',
+  month:'short',
+  hour:'2-digit',
+  minute:'2-digit'
+ });
 }
 
+function escapeHTML(value){
+ return String(value??'').replace(/[&<>"']/g,char=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
+ }[char]));
+}
 
-let editingEventId = null;
+// Редактирование записи
 
 function editEvent(id){
- const e=events.find(x=>x.id===id);
+
+ const e=events.find(x=>String(x.id)===String(id));
  if(!e)return;
 
  editingEventId=id;
 
  const date=new Date(e.date);
+
  document.getElementById('editDate').value=
   date.getFullYear()+'-'+
   String(date.getMonth()+1).padStart(2,'0')+'-'+
@@ -224,22 +358,33 @@ function editEvent(id){
  let fields='';
 
  if(e.type==='feeding'){
-  fields='<label>Объём смеси (мл)</label><input id="editAmount" type="number" value="'+(e.amount||'')+'">';
+  fields=
+   '<label>Объём смеси (мл)</label>'+
+   '<input id="editAmount" type="number" value="'+escapeHTML(e.amount)+'">';
  }
 
  if(e.type==='meal'){
-  fields='<label>Продукт</label><input id="editName" value="'+(e.name||'')+'">'+
-   '<label>Количество</label><input id="editAmount" value="'+(e.amount||'')+'">'+
-   '<label>Заметки</label><textarea id="editNote">'+(e.note||'')+'</textarea>';
+  fields=
+   '<label>Продукт</label>'+
+   '<input id="editName" value="'+escapeHTML(e.name)+'">'+
+   '<label>Количество</label>'+
+   '<input id="editAmount" value="'+escapeHTML(e.amount)+'">'+
+   '<label>Заметки</label>'+
+   '<textarea id="editNote">'+escapeHTML(e.note)+'</textarea>';
  }
 
  if(e.type==='growth'){
-  fields='<label>Рост (см)</label><input id="editHeight" type="number" step="0.1" value="'+(e.height||'')+'">'+
-   '<label>Вес (г)</label><input id="editWeight" type="number" value="'+(e.weight||'')+'">';
+  fields=
+   '<label>Рост (см)</label>'+
+   '<input id="editHeight" type="number" step="0.1" value="'+escapeHTML(e.height)+'">'+
+   '<label>Вес (г)</label>'+
+   '<input id="editWeight" type="number" value="'+escapeHTML(e.weight)+'">';
  }
 
  if(e.type==='sleep'||e.type==='walk'){
-  fields='<label>Длительность (минуты)</label><input id="editDuration" type="number" min="0" value="'+(e.duration||'')+'">';
+  fields=
+   '<label>Длительность (минуты)</label>'+
+   '<input id="editDuration" type="number" min="0" value="'+escapeHTML(e.duration)+'">';
  }
 
  document.getElementById('editFields').innerHTML=fields;
@@ -252,7 +397,8 @@ function closeEdit(){
 }
 
 function saveEditedEvent(){
- const e=events.find(x=>x.id===editingEventId);
+
+ const e=events.find(x=>String(x.id)===String(editingEventId));
  if(!e)return;
 
  const dateValue=document.getElementById('editDate').value;
@@ -264,14 +410,26 @@ function saveEditedEvent(){
  }
 
  const date=new Date(dateValue+'T'+timeValue);
+
  if(isNaN(date.getTime())){
   alert('Некорректная дата или время');
   return;
  }
 
- e.date=date.toISOString();
-
  const getValue=id=>document.getElementById(id)?.value??'';
+
+ if(e.type==='sleep'||e.type==='walk'){
+  const durationValue=getValue('editDuration');
+  const duration=Number(durationValue);
+
+  if(durationValue===''||!Number.isFinite(duration)||duration<0){
+   alert('Проверь длительность');
+   return;
+  }
+
+  e.duration=duration;
+  e.start=new Date(date.getTime()-duration*60000).toISOString();
+ }
 
  if(e.type==='feeding'){
   e.amount=getValue('editAmount');
@@ -288,132 +446,122 @@ function saveEditedEvent(){
   e.weight=getValue('editWeight');
  }
 
- if(e.type==='sleep'||e.type==='walk'){
-  const duration=Number(getValue('editDuration'));
-  if(!Number.isFinite(duration)||duration<0){
-   alert('Проверь длительность');
-   return;
-  }
-  e.duration=duration;
-  e.start=new Date(date.getTime()-duration*60000).toISOString();
- }
+ e.date=date.toISOString();
 
  closeEdit();
  save();
 }
 
+// Удаление записи
 
 function deleteEvent(id){
+
  if(!confirm('Удалить эту запись?'))return;
- events=events.filter(e=>e.id!==id);
+
+ events=events.filter(e=>String(e.id)!==String(id));
  save();
 }
 
-
-
-
- function ask(field,label){
-  const value=prompt(label,e[field]??'');
-  if(value!==null)e[field]=value;
- }
-
- if(e.type==='feeding')ask('amount','Объём смеси (мл):');
- if(e.type==='meal'){
-  ask('name','Продукт:');
-  ask('amount','Количество:');
-  ask('note','Заметки:');
- }
- if(e.type==='growth'){
-  ask('height','Рост (см):');
-  ask('weight','Вес (г):');
- }
- if(e.type==='sleep'||e.type==='walk'){
-  const duration=prompt('Длительность в минутах:',e.duration??'');
-  if(duration!==null){
-   const n=Number(duration);
-   if(!Number.isFinite(n)||n<0)return alert('Некорректная длительность');
-   e.duration=n;
-   e.start=new Date(newDate.getTime()-n*60000).toISOString();
-  }
- }
- save();
-}
-
-function deleteEvent(id){
- if(confirm('Удалить эту запись?')){
-  events=events.filter(e=>e.id!==id);
-  save();
- }
-}
+// Отображение данных
 
 function render(){
+
  const list=[...events].sort((a,b)=>new Date(b.date)-new Date(a.date));
+
  const today=new Date().toDateString();
- const todayEvents=list.filter(e=>new Date(e.date).toDateString()===today);
 
- document.getElementById('timeline').innerHTML=todayEvents.length?todayEvents.map(e=>{
-  let title=e.type==='feeding'?'🍼 Кормление — '+e.amount+' мл':
-   e.type==='meal'?'🥣 '+e.name:
+ const todayEvents=list.filter(e=>
+  new Date(e.date).toDateString()===today
+ );
+
+ document.getElementById('timeline').innerHTML=
+ todayEvents.length?todayEvents.map(e=>{
+
+  let title=
+   e.type==='feeding'?'🍼 Кормление — '+escapeHTML(e.amount)+' мл':
+   e.type==='meal'?'🥣 '+escapeHTML(e.name):
    e.type==='sleep'?'🌙 Сон':
-   e.type==='walk'?'🚶 Прогулка':'📏 Измерение роста и веса';
+   e.type==='walk'?'🚶 Прогулка':
+   '📏 Измерение роста и веса';
 
-  let detail=e.type==='growth'?'Рост: '+(e.height||'—')+' см · Вес: '+(e.weight||'—')+' г':
-   e.type==='meal'?(e.amount||'')+' '+(e.note||''):
-   ['sleep','walk'].includes(e.type)?'Длительность: '+e.duration+' мин':'';
+  let detail=
+   e.type==='growth'
+    ?'Рост: '+escapeHTML(e.height||'—')+' см · Вес: '+escapeHTML(e.weight||'—')+' г'
+   :e.type==='meal'
+    ?escapeHTML(e.amount||'')+' '+escapeHTML(e.note||'')
+   :['sleep','walk'].includes(e.type)
+    ?'Длительность: '+escapeHTML(e.duration)+' мин'
+   :'';
 
-  return '<div class="event"><strong>'+title+'</strong><small>'+fmt(e.date)+' · '+detail+'</small><div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>';
+  return '<div class="event">'+
+   '<strong>'+title+'</strong>'+
+   '<small>'+fmt(e.date)+' · '+detail+'</small>'+
+   '<div class="event-actions">'+
+   '<button onclick="editEvent('+JSON.stringify(e.id)+')">✏️ Редактировать</button>'+
+   '<button class="delete" onclick="deleteEvent('+JSON.stringify(e.id)+')">🗑 Удалить</button>'+
+   '</div></div>';
+
  }).join(''):'Пока нет событий за сегодня';
 
  const feeds=list.filter(e=>e.type==='feeding'||e.type==='meal');
  const lastFeed=feeds[0];
 
  document.getElementById('lastFeed').innerHTML=lastFeed?
-  (lastFeed.type==='feeding'?'Смесь, '+lastFeed.amount+' мл':'Прикорм: '+lastFeed.name)+
+  (lastFeed.type==='feeding'
+   ?'Смесь, '+escapeHTML(lastFeed.amount)+' мл'
+   :'Прикорм: '+escapeHTML(lastFeed.name))+
   '<br><span class="muted">'+fmt(lastFeed.date)+'</span>'+
-  '<div class="timer" id="feedElapsed"></div>':
-  'Пока нет записей';
+  '<div class="timer" id="feedElapsed"></div>'
+  :'Пока нет записей';
 
  if(lastFeed){
-  const minutes=Math.max(0,Math.floor((Date.now()-new Date(lastFeed.date).getTime())/60000));
-  document.getElementById('feedElapsed').textContent='Прошло: '+Math.floor(minutes/60)+' ч '+(minutes%60)+' мин';
+  const minutes=Math.max(0,Math.floor(
+   (Date.now()-new Date(lastFeed.date).getTime())/60000
+  ));
+
+  document.getElementById('feedElapsed').textContent=
+   'Прошло: '+Math.floor(minutes/60)+' ч '+(minutes%60)+' мин';
  }
 
- document.getElementById('activeTimers').innerHTML=['sleep','walk'].filter(t=>timers[t]).map(t=>{
-  const name=t==='sleep'?'🌙 Александр спит':'🚶 На прогулке';
-  const elapsed=Math.max(0,Math.floor((Date.now()-new Date(timers[t]).getTime())/60000));
-  return '<div class="card"><strong>'+name+'</strong><div class="timer">'+Math.floor(elapsed/60)+' ч '+(elapsed%60)+' мин</div><div class="muted">Начало: '+fmt(timers[t])+'</div></div>';
- }).join('');
+ document.getElementById('activeTimers').innerHTML=
+  ['sleep','walk'].filter(t=>timers[t]).map(t=>{
 
- document.getElementById('sleepBtn').textContent=timers.sleep?'🌙 Проснулся':'🌙 Уснул';
- document.getElementById('walkBtn').textContent=timers.walk?'🚶 Вернулись':'🚶 Вышли гулять';
+   const name=t==='sleep'?'🌙 Александр спит':'🚶 На прогулке';
 
- document.getElementById('growthList').innerHTML=list.filter(e=>e.type==='growth').map(e=>
-  '<div class="event">'+fmt(e.date)+'<br>Рост: '+(e.height||'—')+' см · Вес: '+(e.weight||'—')+' г'+
-  '<div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>'
- ).join('');
+   const elapsed=Math.max(0,Math.floor(
+    (Date.now()-new Date(timers[t]).getTime())/60000
+   ));
+
+   return '<div class="card">'+
+    '<strong>'+name+'</strong>'+
+    '<div class="timer">'+Math.floor(elapsed/60)+' ч '+(elapsed%60)+' мин</div>'+
+    '<div class="muted">Начало: '+fmt(timers[t])+'</div>'+
+    '</div>';
+
+  }).join('');
+
+ document.getElementById('sleepBtn').textContent=
+  timers.sleep?'🌙 Проснулся':'🌙 Уснул';
+
+ document.getElementById('walkBtn').textContent=
+  timers.walk?'🚶 Вернулись':'🚶 Вышли гулять';
+
+ document.getElementById('growthList').innerHTML=
+  list.filter(e=>e.type==='growth').map(e=>
+   '<div class="event">'+
+   fmt(e.date)+'<br>'+
+   'Рост: '+escapeHTML(e.height||'—')+' см · Вес: '+escapeHTML(e.weight||'—')+' г'+
+   '<div class="event-actions">'+
+   '<button onclick="editEvent('+JSON.stringify(e.id)+')">✏️ Редактировать</button>'+
+   '<button class="delete" onclick="deleteEvent('+JSON.stringify(e.id)+')">🗑 Удалить</button>'+
+   '</div></div>'
+  ).join('');
 }
-
 
 render();
 setInterval(render,30000);
+
 </script>
- 
-<div id="editModal" class="hidden">
- <div class="card">
-  <h2 id="editTitle">Редактирование записи</h2>
-
-  <label>Дата</label>
-  <input id="editDate" type="date">
-
-  <label>Время</label>
-  <input id="editTime" type="time">
-
-  <div id="editFields"></div>
-
-  <button class="primary" onclick="saveEditedEvent()">Сохранить изменения</button>
-  <button onclick="closeEdit()">Отмена</button>
- </div>
-</div>
 
 </body>
 </html>
