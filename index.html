@@ -44,6 +44,42 @@ label{font-size:13px;color:#817874}
 .tabs button{white-space:nowrap;background:#eee8e4}
 .tabs button.active{background:#88748d;color:white}
 .hidden{display:none}
+ 
+#editModal{
+ position:fixed;
+ inset:0;
+ z-index:1000;
+ background:#403b3866;
+ padding:20px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ overflow-y:auto;
+}
+#editModal.hidden{display:none}
+#editModal .card{
+ width:100%;
+ max-width:450px;
+ max-height:90vh;
+ overflow-y:auto;
+ margin:auto;
+}
+#editModal label{
+ display:block;
+ margin-top:12px;
+ margin-bottom:5px;
+}
+#editModal input,
+#editModal textarea{
+ width:100%;
+ box-sizing:border-box;
+ margin-bottom:8px;
+}
+#editModal button{
+ width:100%;
+ margin-top:8px;
+}
+
 </style>
 </head>
 <body>
@@ -309,5 +345,23 @@ function render(){
 render();
 setInterval(render,30000);
 </script>
+ 
+<div id="editModal" class="hidden">
+ <div class="card">
+  <h2 id="editTitle">Редактирование записи</h2>
+
+  <label>Дата</label>
+  <input id="editDate" type="date">
+
+  <label>Время</label>
+  <input id="editTime" type="time">
+
+  <div id="editFields"></div>
+
+  <button class="primary" onclick="saveEditedEvent()">Сохранить изменения</button>
+  <button onclick="closeEdit()">Отмена</button>
+ </div>
+</div>
+
 </body>
 </html>
