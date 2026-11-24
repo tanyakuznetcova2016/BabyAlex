@@ -165,28 +165,100 @@ function showTab(name,button){
 function fmt(date){
  return new Date(date).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 }
+
+function editEvent(id){
+ const e=events.find(x=>x.id===id);
+ if(!e)return;
+
+ const localDate=new Date(new Date(e.date).getTime()-new Date(e.date).getTimezoneOffset()*60000).toISOString().slice(0,16);
+ const dateInput=prompt('Дата и время (ГГГГ-ММ-ДДTЧЧ:ММ)',localDate);
+ if(dateInput===null)return;
+ const newDate=new Date(dateInput);
+ if(isNaN(newDate.getTime()))return alert('Некорректная дата');
+ e.date=newDate.toISOString();
+
+ function ask(field,label){
+  const value=prompt(label,e[field]??'');
+  if(value!==null)e[field]=value;
+ }
+
+ if(e.type==='feeding'){
+  ask('amount','Объём смеси (мл):');
+ }
+ if(e.type==='meal'){
+  ask('name','Название продукта:');
+  ask('amount','Количество:');
+  ask('note','Заметки:');
+ }
+ if(e.type==='growth'){
+  ask('height','Рост (см):');
+  ask('weight','Вес (г):');
+ }
+ if(e.type==='sleep'||e.type==='walk'){
+  const duration=prompt('Длительность в минутах:',e.duration??'');
+  if(duration!==null){
+   const n=Number(duration);
+   if(!Number.isFinite(n)||n<0)return alert('Укажи корректную длительность');
+   e.duration=n;
+   e.start=new Date(newDate.getTime()-n*60000).toISOString();
+  }
+ }
+ save();
+}
+
+function deleteEvent(id){
+ if(!confirm('Удалить эту запись?'))return;
+ events=events.filter(e=>e.id!==id);
+ save();
+}
+
 function render(){
  const list=[...events].sort((a,b)=>new Date(b.date)-new Date(a.date));
  const today=new Date().toDateString();
  const todayEvents=list.filter(e=>new Date(e.date).toDateString()===today);
+
  document.getElementById('timeline').innerHTML=todayEvents.length?todayEvents.map(e=>{
-  let title=e.type==='feeding'?'🍼 Кормление — '+e.amount+' мл':e.type==='meal'?'🥣 '+e.name:e.type==='sleep'?'🌙 Сон':e.type==='walk'?'🚶 Прогулка':'📏 Измерение роста и веса';
-  let detail=e.type==='growth'?'Рост: '+(e.height||'—')+' см · Вес: '+(e.weight||'—')+' г':e.type==='meal'?(e.amount||'')+' '+(e.note||''):['sleep','walk'].includes(e.type)?'Длительность: '+e.duration+' мин':'';
-  return '<div class="event"><strong>'+title+'</strong><small>'+fmt(e.date)+' · '+detail+'</small></div>';
+  let title=e.type==='feeding'?'🍼 Кормление — '+e.amount+' мл':
+   e.type==='meal'?'🥣 '+e.name:
+   e.type==='sleep'?'🌙 Сон':
+   e.type==='walk'?'🚶 Прогулка':'📏 Измерение роста и веса';
+
+  let detail=e.type==='growth'?'Рост: '+(e.height||'—')+' см · Вес: '+(e.weight||'—')+' г':
+   e.type==='meal'?(e.amount||'')+' '+(e.note||''):
+   ['sleep','walk'].includes(e.type)?'Длительность: '+e.duration+' мин':'';
+
+  return '<div class="event"><strong>'+title+'</strong><small>'+fmt(e.date)+' · '+detail+'</small><div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button class="delete" onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>';
  }).join(''):'Пока нет событий за сегодня';
 
  const feeds=list.filter(e=>e.type==='feeding'||e.type==='meal');
- document.getElementById('lastFeed').textContent=feeds.length?(feeds[0].type==='feeding'?'Смесь, '+feeds[0].amount+' мл':'Прикорм: '+feeds[0].name)+' · '+fmt(feeds[0].date):'Пока нет записей';
+ const lastFeed=feeds[0];
+
+ document.getElementById('lastFeed').innerHTML=lastFeed?
+  (lastFeed.type==='feeding'?'Смесь, '+lastFeed.amount+' мл':'Прикорм: '+lastFeed.name)+
+  '<br><span class="muted">'+fmt(lastFeed.date)+'</span>'+
+  '<div class="timer" id="feedElapsed"></div>':
+  'Пока нет записей';
+
+ if(lastFeed){
+  const minutes=Math.max(0,Math.floor((Date.now()-new Date(lastFeed.date).getTime())/60000));
+  document.getElementById('feedElapsed').textContent='Прошло: '+Math.floor(minutes/60)+' ч '+(minutes%60)+' мин';
+ }
 
  document.getElementById('activeTimers').innerHTML=['sleep','walk'].filter(t=>timers[t]).map(t=>{
   const name=t==='sleep'?'🌙 Александр спит':'🚶 На прогулке';
   const elapsed=Math.max(0,Math.floor((Date.now()-new Date(timers[t]).getTime())/60000));
   return '<div class="card"><strong>'+name+'</strong><div class="timer">'+Math.floor(elapsed/60)+' ч '+(elapsed%60)+' мин</div><div class="muted">Начало: '+fmt(timers[t])+'</div></div>';
  }).join('');
+
  document.getElementById('sleepBtn').textContent=timers.sleep?'🌙 Проснулся':'🌙 Уснул';
  document.getElementById('walkBtn').textContent=timers.walk?'🚶 Вернулись':'🚶 Вышли гулять';
- document.getElementById('growthList').innerHTML=list.filter(e=>e.type==='growth').map(e=>'<div class="event">'+fmt(e.date)+'<br>Рост: '+(e.height||'—')+' см · Вес: '+(e.weight||'—')+' г</div>').join('');
+
+ document.getElementById('growthList').innerHTML=list.filter(e=>e.type==='growth').map(e=>
+  '<div class="event">'+fmt(e.date)+'<br>Рост: '+(e.height||'—')+' см · Вес: '+(e.weight||'—')+' г'+
+  '<div class="event-actions"><button onclick="editEvent('+e.id+')">✏️ Редактировать</button><button class="delete" onclick="deleteEvent('+e.id+')">🗑 Удалить</button></div></div>'
+ ).join('');
 }
+
 render();
 setInterval(render,30000);
 </script>
